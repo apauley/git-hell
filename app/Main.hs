@@ -12,4 +12,5 @@ main = do
 
 currentBranch :: Shell Text
 currentBranch = do
-  inproc "git" ["branch", "--list"] empty
+  let branches = inproc "git" ["branch", "--list"] empty
+  grep (prefix "*") branches
