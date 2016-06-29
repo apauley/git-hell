@@ -1,6 +1,10 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
-import Lib
+import Turtle
+import Prelude hiding (FilePath)
 
 main :: IO ()
-main = someFunc
+main = do
+  echo "Hello git-hell"

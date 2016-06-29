@@ -29,6 +29,7 @@ executable git-hell
 
   build-depends:       base
                      , git-hell
+                     , turtle
   default-language:    Haskell2010
 
 test-suite git-hell-test
