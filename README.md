@@ -1,8 +1,8 @@
-= Git + Haskell: git-hell =
+# Git + Haskell: git-hell
 
 A command-line utility/library for git interaction.
 
-== Building ==
+## Building
 
 ```bash
 stack build
