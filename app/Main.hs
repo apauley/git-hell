@@ -7,7 +7,7 @@ import Prelude hiding (FilePath)
 
 main :: IO ()
 main = do
-  view currentBranch
+  stdout currentBranch
   echo "Hello git-hell"
 
 currentBranch :: Shell Text
