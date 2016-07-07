@@ -4,6 +4,7 @@ module GitHellLib where
 
 import Turtle
 import qualified Control.Foldl as Fold
+import HSHLib (emptyErrorText)
 
 currentBranchOrEmptyText :: IO Text
 currentBranchOrEmptyText = do
@@ -19,12 +20,4 @@ currentBranchOrNothing = fold currentBranch Fold.head
 currentBranch :: Shell Text
 currentBranch = do
   let branches = inprocWithErr "git" ["branch", "--list"] empty
-  sed ("* " *> return "") $ grep (prefix "*") (discardErr branches)
-
-discardErr :: Shell (Either Text Text) -> Shell Text
-discardErr branchesWithErrShell = do
-  branchesWithErr <- branchesWithErrShell
-  let branches = case branchesWithErr of
-        Right b     -> b
-        Left  error -> ""
-  return branches
+  sed ("* " *> return "") $ grep (prefix "*") (fmap emptyErrorText branches)
