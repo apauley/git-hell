@@ -6,6 +6,9 @@ resolver: lts-6.0
 # Local packages, usually specified by relative directory name
 packages:
 - '.'
+- location:
+    git: https://github.com/apauley/hsh
+    commit: 7e0e281f3b85a354d69ec3ae99444b9cc2131c84
 
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
 extra-deps: []
