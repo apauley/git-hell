@@ -11,5 +11,9 @@ currentBranchOrNothing = fold currentBranch Fold.head
 
 currentBranch :: Shell Text
 currentBranch = do
-  let branches = inprocWithErr "git" ["branch", "--list"] empty
-  sed ("* " *> return "") $ grep (prefix "*") (fmap emptyErrorText branches)
+  sed ("* " *> return "") $ grep (prefix "*") (git "branch" ["--list"])
+
+git :: Text -> [Text] -> Shell Text
+git cmd args = do
+  let out = inprocWithErr "git" (cmd:args) empty
+  fmap emptyErrorText out
