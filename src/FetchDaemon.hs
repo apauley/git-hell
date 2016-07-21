@@ -14,26 +14,13 @@ defaultSleepSeconds = 120
 
 fetchDaemon :: FilePath -> Maybe Int -> IO ()
 fetchDaemon path maybeSecs = do
-  -- repos <- gitRepos path
   let sleepSeconds = fromMaybe defaultSleepSeconds $ fmap realToFrac maybeSecs :: NominalDiffTime
-  fetch path sleepSeconds
+  fetch sleepSeconds path
+  -- repos <- gitRepos path
+  -- for_ repos (fetch sleepSeconds)
 
-gitRepos :: FilePath -> IO [FilePath]
-gitRepos path = do
-  let shellPaths = find (suffix ".git") path :: Shell FilePath
-  paths <- fold shellPaths Fold.list
-  let filtps = filter is_git paths
-  return $ fmap parent filtps
-
-is_git :: FilePath -> Bool
-is_git path = do
-  let pathString = format fp path
-  let git_suffix = T.isSuffixOf ".git" pathString
-  let excluded = T.isInfixOf ".stack-work" pathString
-  git_suffix && not excluded
-
-fetch :: FilePath -> NominalDiffTime -> IO ()
-fetch repoDir sleepSeconds = do
+fetch :: NominalDiffTime -> FilePath -> IO ()
+fetch sleepSeconds repoDir = do
   cd repoDir
   dir <- pwd
 
@@ -54,6 +41,20 @@ fetchEvery dir sleepSeconds = do
   sleep sleepSeconds
   fetchOne dir
   fetchEvery dir sleepSeconds
+
+gitRepos :: FilePath -> IO [FilePath]
+gitRepos path = do
+  let shellPaths = find (suffix ".git") path :: Shell FilePath
+  paths <- fold shellPaths Fold.list
+  let filtps = filter is_git paths
+  return $ fmap parent filtps
+
+is_git :: FilePath -> Bool
+is_git path = do
+  let pathString = format fp path
+  let git_suffix = T.isSuffixOf ".git" pathString
+  let excluded = T.isInfixOf ".stack-work" pathString
+  git_suffix && not excluded
 
 log :: Text -> IO ()
 log msg = do
