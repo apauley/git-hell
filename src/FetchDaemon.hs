@@ -15,19 +15,14 @@ defaultSleepSeconds = 120
 fetchDaemon :: FilePath -> Maybe Int -> IO ()
 fetchDaemon path maybeSecs = do
   let sleepSeconds = fromMaybe defaultSleepSeconds $ fmap realToFrac maybeSecs :: NominalDiffTime
-  fetch sleepSeconds path
-  -- repos <- gitRepos path
-  -- for_ repos (fetch sleepSeconds)
+  repos <- gitRepos path
+  fetchAll sleepSeconds repos
 
-fetch :: NominalDiffTime -> FilePath -> IO ()
-fetch sleepSeconds repoDir = do
-  cd repoDir
-  dir <- pwd
-
-  fetchOne dir .||. die (format ("Error fetching in "%fp%". Is this a git repository?") dir)
-
-  log $ format ("Fetching every "%s%" in " %fp% "") (T.pack $ show sleepSeconds) dir
-  fetchEvery dir sleepSeconds
+fetchAll :: NominalDiffTime -> [FilePath] -> IO ()
+fetchAll sleepSeconds repos = do
+  for_ repos fetchOne
+  sleep sleepSeconds
+  fetchAll sleepSeconds repos
 
 fetchOne :: FilePath -> IO ExitCode
 fetchOne dir = do
@@ -35,12 +30,6 @@ fetchOne dir = do
   (exitCode, out) <- shellStrict "git fetch" empty
   log $ format ("Done running a git fetch in " %fp% " - "%s%s) dir (T.pack $ show exitCode) out
   return exitCode
-
-fetchEvery :: FilePath -> NominalDiffTime -> IO ()
-fetchEvery dir sleepSeconds = do
-  sleep sleepSeconds
-  fetchOne dir
-  fetchEvery dir sleepSeconds
 
 gitRepos :: FilePath -> IO [FilePath]
 gitRepos path = do
