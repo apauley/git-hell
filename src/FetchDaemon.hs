@@ -25,7 +25,8 @@ fetchAll sleepSeconds repos = do
   fetchAll sleepSeconds repos
 
 fetchOne :: FilePath -> IO ExitCode
-fetchOne dir = do
+fetchOne dir' = do
+  dir <- realpath dir'
   log $ format ("Running a git fetch in " %fp) dir
   (exitCode, out) <- shellStrict "git fetch" empty
   log $ format ("Done running a git fetch in " %fp% " - "%s%s) dir (T.pack $ show exitCode) out
@@ -36,7 +37,8 @@ gitRepos path = do
   let shellPaths = find (suffix ".git") path :: Shell FilePath
   paths <- fold shellPaths Fold.list
   let filtps = filter is_git paths
-  return $ fmap parent filtps
+  let relativeRepos = fmap parent filtps
+  return relativeRepos
 
 is_git :: FilePath -> Bool
 is_git path = do
