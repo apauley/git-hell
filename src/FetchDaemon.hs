@@ -21,6 +21,9 @@ fetchDaemon path maybeSecs = do
 fetchAll :: NominalDiffTime -> [FilePath] -> IO ()
 fetchAll sleepSeconds repos = do
   for_ repos fetchOne
+  echoFlush ""
+  log $ format ("Sleeping "%s) (repr sleepSeconds)
+  echoFlush ""
   sleep sleepSeconds
   fetchAll sleepSeconds repos
 
