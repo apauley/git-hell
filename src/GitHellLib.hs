@@ -7,10 +7,10 @@ import qualified Control.Foldl as Fold
 import HSHLib (emptyErrorText)
 
 currentBranchOrNothing :: IO (Maybe Text)
-currentBranchOrNothing = fold currentBranch Fold.head
+currentBranchOrNothing = fold currentBranchDiscardErr Fold.head
 
-currentBranch :: Shell Text
-currentBranch = do
+currentBranchDiscardErr :: Shell Text
+currentBranchDiscardErr = do
   sed ("* " *> return "") $ grep (prefix "*") (gitDiscardErr "branch" ["--list"])
 
 gitDiscardErr :: Text -> [Text] -> Shell Text

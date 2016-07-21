@@ -10,7 +10,7 @@ main :: IO ()
 main = do
   x <- options "git utilities" parser
   case x of
-    CurrentBranch _ -> stdout currentBranch
+    CurrentBranch _ -> stdout currentBranchDiscardErr
     FetchDaemon (path, sleepSeconds) -> echo "Not implemented"
 
 data Command = CurrentBranch (Maybe Text) | FetchDaemon (FilePath, Maybe Int) deriving (Show)
