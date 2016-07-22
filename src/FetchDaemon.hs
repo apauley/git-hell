@@ -13,20 +13,20 @@ import Data.Foldable (for_)
 defaultSleepSeconds = 120
 
 fetchDaemon :: FilePath -> Maybe Int -> IO ()
-fetchDaemon path maybeSecs = do
+fetchDaemon baseDir maybeSecs = do
   let sleepSeconds = fromMaybe defaultSleepSeconds $ fmap realToFrac maybeSecs :: NominalDiffTime
-  repos <- gitRepos path
-  fetchAll sleepSeconds repos
+  fetchAll sleepSeconds baseDir
 
-fetchAll :: NominalDiffTime -> [FilePath] -> IO ()
-fetchAll sleepSeconds repos = do
+fetchAll :: NominalDiffTime -> FilePath -> IO ()
+fetchAll sleepSeconds baseDir = do
+  repos <- gitRepos baseDir
   log $ format ("Fetching "%d%" repo(s) every "%s%"\n") (length repos) (repr sleepSeconds)
   for_ repos fetchOne
   echoFlush ""
   log $ format ("Sleeping "%s) (repr sleepSeconds)
   echoFlush ""
   sleep sleepSeconds
-  fetchAll sleepSeconds repos
+  fetchAll sleepSeconds baseDir
 
 fetchOne :: FilePath -> IO ExitCode
 fetchOne dir' = do
