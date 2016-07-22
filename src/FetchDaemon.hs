@@ -9,6 +9,7 @@ import qualified Data.Text as T (isSuffixOf, isInfixOf, pack)
 import qualified Control.Foldl as Fold
 import HSHLib (echoFlush)
 import Data.Foldable (for_)
+import Control.Monad (sequence)
 
 defaultSleepSeconds = 120
 
@@ -30,10 +31,11 @@ fetchAll sleepSeconds baseDir = do
 
 fetchOne :: FilePath -> IO ExitCode
 fetchOne dir' = do
-  dir <- realpath dir'
+  cd dir'
+  dir <- pwd
   log $ format ("Running a git fetch in " %fp) dir
-  (exitCode, out) <- shellStrict "git fetch" empty
-  log $ format ("Done running a git fetch in " %fp% " - "%s%s) dir (T.pack $ show exitCode) out
+  (exitCode, out) <- procStrict "git" ["fetch"] empty
+  log $ format ("Done running a git fetch in " %fp% " - "%s%s%"\n") dir (T.pack $ show exitCode) out
   return exitCode
 
 gitRepos :: FilePath -> IO [FilePath]
@@ -42,7 +44,7 @@ gitRepos path = do
   paths <- fold shellPaths Fold.list
   let filtps = filter is_git paths
   let relativeRepos = fmap parent filtps
-  return relativeRepos
+  sequence $ fmap realpath relativeRepos
 
 is_git :: FilePath -> Bool
 is_git path = do
