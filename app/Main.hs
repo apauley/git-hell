@@ -3,9 +3,10 @@
 module Main where
 
 import Turtle
-import GitHellLib
-import FetchDaemon (fetchDaemon)
 import Prelude hiding (FilePath)
+import FetchDaemon (fetchDaemon)
+import HSHLib (noArgs)
+import GitHellLib
 
 main :: IO ()
 main = do
@@ -23,6 +24,3 @@ parser = fmap CurrentBranch (subcommand "current-branch" "Show the current git b
 fetchParser :: Parser (FilePath, Maybe Int)
 fetchParser = (,) <$> argPath "basedir"  "The path to a directory with git repositories, or the path to a single repo"
                   <*> optional (argInt "sleepSeconds" "The number of seconds to sleep between fetches.")
-
-noArgs :: Parser (Maybe Text)
-noArgs = optional (argText "" "")
