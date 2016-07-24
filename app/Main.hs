@@ -12,7 +12,7 @@ main :: IO ()
 main = do
   x <- options "git utilities" parser
   case x of
-    CurrentBranch _ -> stdout currentBranchDiscardErr
+    CurrentBranch _ -> currentBranchDiscardErr >>= echo
     FetchDaemon (path, maybeSecs) -> fetchDaemon path maybeSecs
 
 data Command = CurrentBranch (Maybe Text) | FetchDaemon (FilePath, Maybe Int) deriving (Show)
