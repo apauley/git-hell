@@ -8,7 +8,7 @@ packages:
 - '.'
 - location:
     git: https://github.com/apauley/hsh
-    commit: fd078161550d24f26e5f4d2f9a53f69d733c803d
+    commit: 2f680c07d99ecfbefbcca0eb0e85866370acdcd2
 
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
 extra-deps: []
