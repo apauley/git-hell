@@ -36,6 +36,18 @@ prePushMain remote url = do
   echo $ format ("Local  Ref: "%s%" Local  SHA: "%s) localRef localSha
   echo $ format ("Remote Ref: "%s%" Remote SHA: "%s) remoteRef remoteSha
 
+  echo "\n Local commit: >>>"
+  stdout $ catCommit localSha
+  echo "<<< local"
+
+  echo "\n Remote commit: >>>"
+  stdout $ catCommit remoteSha
+  echo "<<< remote"
+
+catCommit :: Text -> Shell Text
+catCommit commit = do
+  inproc "git" ["cat-file", "commit", commit] empty
+
 prePushParser :: Parser (Text, Text)
 prePushParser = (,) <$> argText "remote"  "Name of the remote to which the push is being done"
                     <*> argText "url"     "URL to which the push is being done"
