@@ -15,6 +15,7 @@ main = do
     "pre-push" -> do
       (remote, url) <- options "git pre-push hook" prePushParser
       prePushMain remote url
+    "pre-receive" -> preReceiveMain
     name -> echo $ format (s%" support not implemented") name
 
 defaultMain :: Text -> IO ()
@@ -43,6 +44,21 @@ prePushMain remote url = do
   echo "\n Remote commit: >>>"
   stdout $ catCommit remoteSha
   echo "<<< remote"
+
+preReceiveMain :: IO ()
+preReceiveMain = do
+  input <- strict stdin
+  echo $ (format ("\n stdin: >"%s%"<\n") input)
+  let [oldSha, newSha, refName] = (T.words . T.strip) input
+  echo $ format ("Old: "%s%" New: "%s%" Ref: "%s) oldSha newSha refName
+
+  echo "\n Old: >>>"
+  stdout $ catCommit oldSha
+  echo "<<< old"
+
+  echo "\n New: >>>"
+  stdout $ catCommit newSha
+  echo "<<< new\n"
 
 catCommit :: Text -> Shell Text
 catCommit commit = do
