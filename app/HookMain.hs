@@ -4,7 +4,7 @@ module Main where
 
 import Turtle
 import System.Environment (getProgName)
-import qualified Data.Text as T (pack)
+import qualified Data.Text as T (pack, strip, words)
 
 main :: IO ()
 main = do
@@ -32,6 +32,9 @@ prePushMain remote url = do
   echo $ format ("Remote: "%s%" Url: "%s) remote url
   input <- strict stdin
   echo $ (format ("\n stdin: >"%s%"<") input)
+  let [localRef, localSha, remoteRef, remoteSha] = (T.words . T.strip) input
+  echo $ format ("Local  Ref: "%s%" Local  SHA: "%s) localRef localSha
+  echo $ format ("Remote Ref: "%s%" Remote SHA: "%s) remoteRef remoteSha
 
 prePushParser :: Parser (Text, Text)
 prePushParser = (,) <$> argText "remote"  "Name of the remote to which the push is being done"
