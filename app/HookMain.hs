@@ -25,8 +25,6 @@ defaultMain me = do
   echo $ format ("Args: >"%s%"<\n") $ repr args
   dir <- pwd
   echo $ format ("pwd: >"%fp%"<\n") dir
-  evars <- env
-  echo $ format ("Env: \n>"%s%"<\n") $ repr evars
 
 prePushMain :: Text -> Text -> IO ()
 prePushMain remote url = do
@@ -47,6 +45,8 @@ prePushMain remote url = do
 
 preReceiveMain :: IO ()
 preReceiveMain = do
+  evars <- env
+  echo $ format ("Env: \n>"%s%"<\n") $ repr evars
   input <- strict stdin
   echo $ (format ("\n stdin: >"%s%"<\n") input)
   let [oldSha, newSha, refName] = (T.words . T.strip) input
