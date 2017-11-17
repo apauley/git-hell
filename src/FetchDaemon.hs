@@ -20,7 +20,7 @@ fetchDaemon baseDir maybeSecs = do
 
 fetchAll :: [FilePath] -> NominalDiffTime -> FilePath -> IO ()
 fetchAll repos sleepSeconds baseDir = do
-  foundRepos <- if null repos then gitRepos baseDir else repos
+  foundRepos <- if null repos then gitRepos baseDir else return repos
   log $ format ("Fetching "%d%" repo(s) every "%s%"\n") (length repos) (repr sleepSeconds)
   for_ repos fetchOne
   echoFlush ""
