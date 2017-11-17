@@ -16,18 +16,18 @@ defaultSleepSeconds = 120
 fetchDaemon :: FilePath -> Maybe Int -> IO ()
 fetchDaemon baseDir maybeSecs = do
   let sleepSeconds = fromMaybe defaultSleepSeconds $ fmap realToFrac maybeSecs :: NominalDiffTime
-  fetchAll sleepSeconds baseDir
+  fetchAll [] sleepSeconds baseDir
 
-fetchAll :: NominalDiffTime -> FilePath -> IO ()
-fetchAll sleepSeconds baseDir = do
-  repos <- gitRepos baseDir
-  log $ format ("Fetching "%d%" repo(s) every "%s%"\n") (length repos) (repr sleepSeconds)
-  for_ repos fetchOne
+fetchAll :: [FilePath] -> NominalDiffTime -> FilePath -> IO ()
+fetchAll repos sleepSeconds baseDir = do
+  foundRepos <- if null repos then gitRepos baseDir else return repos
+  log $ format ("Fetching "%d%" repo(s) every "%s%"\n") (length foundRepos) (repr sleepSeconds)
+  for_ foundRepos fetchOne
   echoFlush ""
   log $ format ("Sleeping "%s) (repr sleepSeconds)
   echoFlush ""
   sleep sleepSeconds
-  fetchAll sleepSeconds baseDir
+  fetchAll foundRepos sleepSeconds baseDir
 
 fetchOne :: FilePath -> IO ExitCode
 fetchOne dir' = do
