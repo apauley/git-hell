@@ -5,19 +5,21 @@ module GitHellLib where
 import Turtle
 import qualified Control.Foldl as Fold
 import qualified Data.Text as T (null, strip)
-import HSHLib (emptyErrorText)
 
 currentBranchOrNothing :: IO (Maybe Text)
 currentBranchOrNothing = do
-  br <- currentBranchDiscardErr
+  br <- fmap lineToText currentBranchDiscardErr
   if T.null br then return Nothing else return $ Just br
 
-currentBranchDiscardErr :: IO Text
+currentBranchDiscardErr :: IO Line
 currentBranchDiscardErr = do
-  let shellTxt = sed ("* " *> return "") $ grep (prefix "*") (gitDiscardErr "branch" ["--list"])
-  fmap T.strip $ strict shellTxt
+  let shellLine = sed ("* " *> return "") $ grep (prefix "*") (gitDiscardErr "branch" ["--list"])
+  fmap unsafeTextToLine (fmap T.strip $ strict shellLine)
 
-gitDiscardErr :: Text -> [Text] -> Shell Text
+emptyError :: Either a Line -> Line
+emptyError = either (\a -> "") (\b -> b)
+
+gitDiscardErr :: Text -> [Text] -> Shell Line
 gitDiscardErr cmd args = do
   let out = inprocWithErr "git" (cmd:args) empty
-  fmap emptyErrorText out
+  fmap emptyError out

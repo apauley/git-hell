@@ -56,4 +56,4 @@ is_git path = do
 log :: Text -> IO ()
 log msg = do
   now <- date
-  echoFlush $ format (utc%" "%s) now msg
+  echoFlush $ unsafeTextToLine $ format (utc%" "%s) now msg
